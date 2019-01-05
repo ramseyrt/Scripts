@@ -4,7 +4,7 @@
 # Script Description: Consolidates and moves system and audit logs to archive
 # location defined through variables
 #
-# Author: Rob Ramsey, robert.ramsey.10.ctr@us.af.mil
+# Author: Rob Ramsey
 #
 # Version Notes:
 # v1.0, Initial build, RTR
