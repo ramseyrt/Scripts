@@ -1,5 +1,11 @@
+#Script to be used in root's crontab to stop the audit daemon, move the current audit log
+#file to a new file name, and then start the audit daemon
+# Rob Ramsey, 6 Feb 2019
+
+# This is the crontab entry
 FileName=/var/log/audit/audit.log.$(/bin/expr $(/bin/ls -1 /var/log/audit/audit.log.[0-9]* | /bin/wc -l) + 1) && if [ ! -f ${FileName} ]; then /sbin/service auditd stop && /bin/mv /var/log/audit/audit.log ${FileName} && /sbin/service auditd start; else /bin/echo "Failure: file exists, exiting"; fi
 
+# This is the crontab entry broken out for readability only
 FileName=/var/log/audit/audit.log.$(/bin/expr $(/bin/ls -1 /var/log/audit/audit.log.[0-9]* | /bin/wc -l) + 1)
 
 if [ ! -f ${FileName} ]
