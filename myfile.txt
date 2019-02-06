@@ -1,0 +1,12 @@
+FileName=/var/log/audit/audit.log.$(/bin/expr $(/bin/ls -1 /var/log/audit/audit.log.[0-9]* | /bin/wc -l) + 1) && if [ ! -f ${FileName} ]; then /sbin/service auditd stop && /bin/mv /var/log/audit/audit.log ${FileName} && /sbin/service auditd start; else /bin/echo "Failure: file exists, exiting"; fi
+
+FileName=/var/log/audit/audit.log.$(/bin/expr $(/bin/ls -1 /var/log/audit/audit.log.[0-9]* | /bin/wc -l) + 1)
+
+if [ ! -f ${FileName} ]
+	then
+		/sbin/service auditd stop
+		/bin/mv /var/log/audit/audit.log ${FileName}
+		/sbin/service auditd start
+	else
+		/bin/echo "Failure: file exists, exiting"
+fi
