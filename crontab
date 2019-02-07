@@ -1,0 +1,20 @@
+# /etc/cron.d/custom-crontab
+#12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+#
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name  command to be executed
+#
+# Stop the audit daemon, rename the current audit log to the next in the numbered rotation series
+# then start the audit daemon. This prevents logs from spanning accross days.
+# Rob Ramsey, 6 Feb 2019
+00 00 * * * root FileName=/var/log/audit/audit.log.$(/bin/expr $(/bin/ls -1 /var/log/audit/audit.log.[0-9]* | /bin/wc -l) + 1) && if [ ! -f ${FileName} ]; then /sbin/service auditd stop && /bin/mv /var/log/audit/audit.log ${FileName} && /sbin/service auditd start; else /bin/echo "Failure: file exists, exiting"; fi
+#
+# Consolidate and rotate audit logs once per day
+# Rob Ramsey, 8 Nov 2018
+05 00 * * * root /bin/echo "Audit rotation started at "$(/bin/date) > /var/log/audit_archive.log && /root/cronjobs/audit_archive.sh >> /var/log/audit_archive.log
