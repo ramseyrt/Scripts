@@ -1,12 +1,34 @@
-#Script to be used in root's crontab to stop the audit daemon, move the current audit log
-#file to a new file name, and then start the audit daemon
+#1234567890123456789012345678901234567890123456789012345678901234567890123456789
+#
+# This code stops the audit daemon, then renames the /var/log/audit/audit.log
+# file to /var/log/audit/audit.log.X where X is the next number in the current
+# audit log rotation series.
+#
+# Because audit logs are rotated based on size, not time, an audit log can span
+# multiple days.  The goal of this code is to truncate the current audit log
+# at midnight and create a new audit log for the new day prventing the span
+# behavior.
+#
 # Rob Ramsey, 6 Feb 2019
+#
+#1234567890123456789012345678901234567890123456789012345678901234567890123456789
 
-# This is the crontab entry
+# This section of code should run in root's crontab at midnight
+
 FileName=/var/log/audit/audit.log.$(/bin/expr $(/bin/ls -1 /var/log/audit/audit.log.[0-9]* | /bin/wc -l) + 1) && if [ ! -f ${FileName} ]; then /sbin/service auditd stop && /bin/mv /var/log/audit/audit.log ${FileName} && /sbin/service auditd start; else /bin/echo "Failure: file exists, exiting"; fi
 
-# This is the crontab entry broken out for readability only
+# This section of code is exactly the same as the prevous code but has been
+# broken out for readability sake
+
+# Defines a variable with an audit log file name that ends with the next bigest
+# number in the curret audit log rotation series
+
 FileName=/var/log/audit/audit.log.$(/bin/expr $(/bin/ls -1 /var/log/audit/audit.log.[0-9]* | /bin/wc -l) + 1)
+
+# Test to see if the new file name is already in use.  If it is, issue an error
+# and exit.  If the file name is not in use, rename the current audit log from
+# audit.log to audit.log.X where X is the next bigest number in the current
+# audit rotation series.
 
 if [ ! -f ${FileName} ]
 	then
