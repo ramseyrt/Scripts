@@ -1,13 +1,9 @@
 #!/bin/bash
 #1234567890123456789012345678901234567890123456789012345678901234567890123456789
 ################################################################################
-# Script Description: Consolidates and moves system and audit logs to archive
+#
+# This script consolidates and moves system and audit logs to an archive
 # location defined through variables
-#
-# The following cronjob runs this script every day at 0030 and creates a log in
-# /var/log/audit_archive.log
-#
-# 30 00 * * * /bin/touch /var/log/audit_archive.log && /bin/echo "Audit rotation started at "$(/bin/date) >> /var/log/audit_archive.log && /root/cronjobs/audit_archive.sh >> /var/log/audit_archive.log
 #
 # Author: Rob Ramsey, robert.ramsey.10.ctr@us.af.mil
 #
@@ -18,11 +14,17 @@
 # v1.2, Added audit log concatenation code to support manual review
 #       RTR 14 Feb 2019
 # v1.3, Added "yesterday" syntax to Date variable so that yesterday's date is
-#	used when running just after midnight. RTR 14 Feb 2019
+#	used when running just after midnight.
+#	RTR 14 Feb 2019
 # v1.4, Added XorgLogName and AideLogName signatures for system log rotation
 #	RTR 19 Feb 2019
+# v1.5, Added script start and stop echo statements
+#	RTR 9 Apr 2019
 #
 ################################################################################
+
+# Provide script start time
+/usr/bin/echo "audit_archive.sh started at" $(/bin/date) 
 
 #Secure archive file and directory permissions
 #Set all file permissions to rw-r-----
@@ -40,7 +42,7 @@ Date=$(/usr/bin/date --date="yesterday" +%d%b%Y)
 /usr/bin/echo "Set Date variable to: " ${Date}
 
 #Is this running on the NFS server?
-NFSServer=no
+NFSServer=yes
 /usr/bin/echo "Set NFSServer variable to: " ${NFSServer}
 
 #NFS mount point for NFS clients
@@ -423,7 +425,8 @@ if [ $(/bin/mount | /usr/bin/grep -c ${NFSMount}) -gt 0 -o ${NFSServer,,} = "yes
 fi
 /usr/bin/echo "Local audit rotation section complete"
 
-#Assuming everything went well thus far, provide a good exit status.
-/usr/bin/echo "Script completed"
-exit 0
+# Provide script stop time
+/usr/bin/echo "audit_archive.sh completed at" $(/bin/date) 
 
+#Assuming everything went well thus far, provide a good exit status.
+exit 0
