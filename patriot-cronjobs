@@ -1,0 +1,35 @@
+# /etc/cron.d/patriot-cronjobs
+#12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+##########################################################################################
+#
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name  command to be executed
+#
+# v1.0 Establishing baseline for CM - RTR, 19 Feb 2019
+# v1.1 Replaced multi-part cronjobs with actual scripts - RTR, 9 Apr 2019
+# v1.2 Added umask statement to secure log file permissions - RTR, 9 Apr 2019
+#
+##########################################################################################
+#
+# Stop the audit daemon, rename the current audit log to the next in the rotation series
+# then start the audit daemon. This prevents logs from spanning accross days.
+# Rob Ramsey, 6 Feb 2019
+#00 00 * * * root /root/cronjobs/auditd_restart.sh > /var/log/audit_archive.log
+00 15 * * * root /root/cronjobs/auditd_restart.sh > /var/log/audit_archive.log
+#
+# Consolidate and rotate audit logs once per day
+# Rob Ramsey, 8 Nov 2018
+#05 00 * * * root /root/cronjobs/audit_archive.sh >> /var/log/audit_archive.log
+05 15 * * * root /root/cronjobs/audit_archive.sh >> /var/log/audit_archive.log
+#
+# Perform filesystem baseline assessment once per day. The script creates its own log.
+# Rob Ramsey, 2 Nov 2018
+#00 23 * * * root /root/cronjobs/aide_rotate.sh
+55 14 * * * root /root/cronjobs/aide_rotate.sh > /var/log/aide_rotate.log
+
