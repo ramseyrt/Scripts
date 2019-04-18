@@ -6,6 +6,7 @@
 # findings into the baseline.
 #
 # v1.0, Initial build, RTR 9 Apr 2019
+# v1.1, Added additional echo status statements, RTR 18 Apr 2019
 #
 ################################################################################
 
@@ -24,11 +25,13 @@ LogFile=/var/log/AideReport_$(/usr/bin/date +%d%b%Y).log
 # Check to see if the log file already exists.  If it does, exit with error.
 if [ ! -f ${LogFile} ]
 	then
+		/usr/bin/echo "Checking the filesystem for changes"
 		# Checks the database, displays the delta, and creates an updated database
 		/usr/sbin/aide --update | tee -a ${LogFile}
 
+		/usr/bin/echo "Establishing new filesystem baseline using scan results."
 		# Replace the existing Aide database with the new database (delta merge)
-		/bin/mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+		/bin/mv -v /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
 	else
 		# Display error
 		/usr/bin/echo "Failure: " ${LogFile} " already exists, exiting"
